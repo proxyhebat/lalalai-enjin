@@ -7,6 +7,10 @@
     "<BUILTIN_MODULES>",
     "<THIRD_PARTY_MODULES>",
     "^@/app/(.*)$",
+    "^@/lib/(.*)$",
+    "^@/hooks/(.*)$",
+    "^@/components/(.*)$",
+    "^@/(.*)$",
     "^[./]"
   ],
   "importOrderSeparation": true,
