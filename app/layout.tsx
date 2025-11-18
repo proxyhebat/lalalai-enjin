@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { architectsDaughter, firacode } from "@/lib/fonts";
+import { architectsDaughter, firacode, georgia } from "@/lib/fonts";
 
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
@@ -18,9 +18,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
-        className={`${architectsDaughter.variable} ${firacode.variable} antialiased`}
+        className={`${architectsDaughter.variable} ${firacode.variable} ${georgia.variable} antialiased`}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {children}
