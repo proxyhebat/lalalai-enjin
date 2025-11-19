@@ -264,7 +264,7 @@ ${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.e
       }
     );
 
-    const clips = result.object;
+    const { clips } = result.object;
 
     await ctx.runMutation(internal.clips.patch, {
       id: args.clipsId,
@@ -277,4 +277,14 @@ ${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.e
 
     return clips;
   }
+});
+
+//slice the video provided by clipper agent (analyzed transcription) using ffmpeg
+export const slicevideo = internalAction({
+  args: {
+    clipsId: v.id("clips"),
+    filepath: v.string(),
+    editings: v.array(v.any())
+  },
+  handler: async (ctx, args) => {}
 });
