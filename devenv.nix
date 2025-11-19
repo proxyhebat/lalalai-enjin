@@ -13,8 +13,10 @@
   # https://devenv.sh/packages/
   packages = [
     pkgs.git
-    pkgs.nodePackages_latest.nodejs
+    pkgs.nodejs
     pkgs.nodePackages_latest.pnpm
+    pkgs.yt-dlp
+    pkgs.ffmpeg
   ];
 
   # https://devenv.sh/languages/
