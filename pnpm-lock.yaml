@@ -7,6 +7,15 @@ settings:
 importers:
   .:
     dependencies:
+      "@hookform/resolvers":
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.66.1(react@19.2.0))
+      "@radix-ui/react-label":
+        specifier: ^2.1.8
+        version: 2.1.8(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      "@radix-ui/react-slot":
+        specifier: ^1.2.4
+        version: 1.2.4(@types/react@19.2.6)(react@19.2.0)
       "@trivago/prettier-plugin-sort-imports":
         specifier: ^6.0.0
         version: 6.0.0(prettier@3.6.2)
@@ -31,9 +40,15 @@ importers:
       react-dom:
         specifier: 19.2.0
         version: 19.2.0(react@19.2.0)
+      react-hook-form:
+        specifier: ^7.66.1
+        version: 7.66.1(react@19.2.0)
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
+      zod:
+        specifier: ^4.1.12
+        version: 4.1.12
     devDependencies:
       "@tailwindcss/postcss":
         specifier: ^4
@@ -274,6 +289,14 @@ packages:
         integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
+
+  "@hookform/resolvers@5.2.2":
+    resolution:
+      {
+        integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA==
+      }
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   "@humanfs/core@0.19.1":
     resolution:
@@ -664,10 +687,72 @@ packages:
       }
     engines: { node: ">=12.4.0" }
 
+  "@radix-ui/react-compose-refs@1.1.2":
+    resolution:
+      {
+        integrity: sha512-z4eqJvfiNnFMHIIvXP3CY57y2WJs5g2v3X0zm9mEJkrkNv4rDxu+sg9Jh8EkXyeqBkB7SOcboo9dMVqhyrACIg==
+      }
+    peerDependencies:
+      "@types/react": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+
+  "@radix-ui/react-label@2.1.8":
+    resolution:
+      {
+        integrity: sha512-FmXs37I6hSBVDlO4y764TNz1rLgKwjJMQ0EGte6F3Cb3f4bIuHB/iLa/8I9VKkmOy+gNHq8rql3j686ACVV21A==
+      }
+    peerDependencies:
+      "@types/react": "*"
+      "@types/react-dom": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      "@types/react-dom":
+        optional: true
+
+  "@radix-ui/react-primitive@2.1.4":
+    resolution:
+      {
+        integrity: sha512-9hQc4+GNVtJAIEPEqlYqW5RiYdrr8ea5XQ0ZOnD6fgru+83kqT15mq2OCcbe8KnjRZl5vF3ks69AKz3kh1jrhg==
+      }
+    peerDependencies:
+      "@types/react": "*"
+      "@types/react-dom": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+      "@types/react-dom":
+        optional: true
+
+  "@radix-ui/react-slot@1.2.4":
+    resolution:
+      {
+        integrity: sha512-Jl+bCv8HxKnlTLVrcDE8zTMJ09R9/ukw4qBs/oZClOfoQk/cOTbDn+NceXfV7j09YPVQUryJPHurafcSg6EVKA==
+      }
+    peerDependencies:
+      "@types/react": "*"
+      react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
+    peerDependenciesMeta:
+      "@types/react":
+        optional: true
+
   "@rtsao/scc@1.1.0":
     resolution:
       {
         integrity: sha512-zt6OdqaDoOnJ1ZYsCYGt9YmWzDXl4vQdKTyJev62gFhRGKdx7mcT54V9KIjg+d2wi9EXsPvAPKe7i7WjfVWB8g==
+      }
+
+  "@standard-schema/utils@0.3.0":
+    resolution:
+      {
+        integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g==
       }
 
   "@swc/helpers@0.5.15":
@@ -2856,6 +2941,15 @@ packages:
     peerDependencies:
       react: ^19.2.0
 
+  react-hook-form@7.66.1:
+    resolution:
+      {
+        integrity: sha512-2KnjpgG2Rhbi+CIiIBQQ9Df6sMGH5ExNyFl4Hw9qO7pIqMBR8Bvu9RQyjl3JM4vehzCh9soiNUM/xYMswb2EiA==
+      }
+    engines: { node: ">=18.0.0" }
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
+
   react-is@16.13.1:
     resolution:
       {
@@ -3524,6 +3618,11 @@ snapshots:
       "@eslint/core": 0.17.0
       levn: 0.4.1
 
+  "@hookform/resolvers@5.2.2(react-hook-form@7.66.1(react@19.2.0))":
+    dependencies:
+      "@standard-schema/utils": 0.3.0
+      react-hook-form: 7.66.1(react@19.2.0)
+
   "@humanfs/core@0.19.1": {}
 
   "@humanfs/node@0.16.7":
@@ -3702,7 +3801,40 @@ snapshots:
 
   "@nolyfill/is-core-module@1.0.39": {}
 
+  "@radix-ui/react-compose-refs@1.1.2(@types/react@19.2.6)(react@19.2.0)":
+    dependencies:
+      react: 19.2.0
+    optionalDependencies:
+      "@types/react": 19.2.6
+
+  "@radix-ui/react-label@2.1.8(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)":
+    dependencies:
+      "@radix-ui/react-primitive": 2.1.4(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+    optionalDependencies:
+      "@types/react": 19.2.6
+      "@types/react-dom": 19.2.3(@types/react@19.2.6)
+
+  "@radix-ui/react-primitive@2.1.4(@types/react-dom@19.2.3(@types/react@19.2.6))(@types/react@19.2.6)(react-dom@19.2.0(react@19.2.0))(react@19.2.0)":
+    dependencies:
+      "@radix-ui/react-slot": 1.2.4(@types/react@19.2.6)(react@19.2.0)
+      react: 19.2.0
+      react-dom: 19.2.0(react@19.2.0)
+    optionalDependencies:
+      "@types/react": 19.2.6
+      "@types/react-dom": 19.2.3(@types/react@19.2.6)
+
+  "@radix-ui/react-slot@1.2.4(@types/react@19.2.6)(react@19.2.0)":
+    dependencies:
+      "@radix-ui/react-compose-refs": 1.1.2(@types/react@19.2.6)(react@19.2.0)
+      react: 19.2.0
+    optionalDependencies:
+      "@types/react": 19.2.6
+
   "@rtsao/scc@1.1.0": {}
+
+  "@standard-schema/utils@0.3.0": {}
 
   "@swc/helpers@0.5.15":
     dependencies:
@@ -5107,6 +5239,10 @@ snapshots:
     dependencies:
       react: 19.2.0
       scheduler: 0.27.0
+
+  react-hook-form@7.66.1(react@19.2.0):
+    dependencies:
+      react: 19.2.0
 
   react-is@16.13.1: {}
 
