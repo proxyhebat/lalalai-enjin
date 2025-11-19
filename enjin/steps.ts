@@ -13,7 +13,7 @@ import {
 } from "@remotion/install-whisper-cpp";
 import { v } from "convex/values";
 
-import { Caption } from "@/lib/types";
+import { Caption } from "@/enjin/types";
 
 import { components, internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
