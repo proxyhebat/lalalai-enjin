@@ -23,7 +23,7 @@ import { clipperOutputSchema } from "./zod_schemas/clipper";
 //download video using yt-dlp
 export const download = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     youtubeURL: v.string()
   },
   returns: v.string(), // returns path to a video
@@ -31,7 +31,7 @@ export const download = internalAction({
     return new Promise<string>((resolve, reject) => {
       const downloadTask = spawn(
         "yt-dlp",
-        [args.youtubeURL, "-f", "mp4", "-o", `${args.clipsId}.%(ext)s`],
+        [args.youtubeURL, "-f", "mp4", "-o", `${args.clipId}.%(ext)s`],
         {
           stdio: "inherit",
           env: { ...process.env }
@@ -43,11 +43,11 @@ export const download = internalAction({
           reject("Error while trying to download the video");
         }
 
-        const filepath = path.resolve(process.cwd(), `${args.clipsId}.mp4`);
+        const filepath = path.resolve(process.cwd(), `${args.clipId}.mp4`);
 
         // update status & progress
         ctx.runMutation(internal.clips.patch, {
-          id: args.clipsId,
+          id: args.clipId,
           data: {
             status: "Extracting Metadata",
             progress: 10,
@@ -64,7 +64,7 @@ export const download = internalAction({
 //extract media information using ffprobe
 export const extractMediaInfo = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     filepath: v.string()
   },
   handler: async (ctx, args) => {
@@ -106,7 +106,7 @@ export const extractMediaInfo = internalAction({
           const fps = videoStream ? videoStream.r_frame_rate : 30; // fallback to 30
 
           await ctx.runMutation(internal.clips.patch, {
-            id: args.clipsId,
+            id: args.clipId,
             data: {
               status: "Extracting Audio",
               progress: 15,
@@ -117,7 +117,7 @@ export const extractMediaInfo = internalAction({
           resolve(void 0);
         } catch (error) {
           await ctx.runMutation(internal.clips.patch, {
-            id: args.clipsId,
+            id: args.clipId,
             data: {
               status: "Failed while parsing media metadata",
               progress: 0,
@@ -134,13 +134,13 @@ export const extractMediaInfo = internalAction({
 //extract audio using ffmpeg
 export const extractAudio = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     filepath: v.string()
   },
   returns: v.string(),
   handler: async (ctx, args) => {
     return new Promise<string>((resolve, reject) => {
-      const outputPath = path.join(process.cwd(), `${args.clipsId}.wav`);
+      const outputPath = path.join(process.cwd(), `${args.clipId}.wav`);
 
       const extractTask = spawn(
         "ffmpeg",
@@ -168,7 +168,7 @@ export const extractAudio = internalAction({
         }
 
         await ctx.runMutation(internal.clips.patch, {
-          id: args.clipsId,
+          id: args.clipId,
           data: {
             status: "Transcribing Audio",
             progress: 20
@@ -189,7 +189,7 @@ export const extractAudio = internalAction({
 //transcribe audio using whisper.cpp
 export const transcribeAudio = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     filepath: v.string()
   },
   handler: async (ctx, args) => {
@@ -220,7 +220,7 @@ export const transcribeAudio = internalAction({
 
     // Update captions in database
     await ctx.runMutation(internal.clips.patch, {
-      id: args.clipsId,
+      id: args.clipId,
       data: {
         status: "Analyzing & Understanding the video",
         progress: 30,
@@ -235,7 +235,7 @@ export const transcribeAudio = internalAction({
 //llm analyze potential viral clips on the video using transcribed audio
 export const analyzeTranscription = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     captions: v.any()
   },
   handler: async (ctx, args) => {
@@ -269,7 +269,7 @@ ${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.e
     const { clips } = result.object;
 
     await ctx.runMutation(internal.clips.patch, {
-      id: args.clipsId,
+      id: args.clipId,
       data: {
         status: "Editing the clips",
         progress: 50,
@@ -284,13 +284,13 @@ ${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.e
 //slice the video provided by clipper agent (analyzed transcription) using ffmpeg
 export const sliceAndStoreVideos = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     filepath: v.string(),
     clips: v.array(v.any())
   },
   handler: async (ctx, args) => {
     await ctx.runMutation(internal.clips.patch, {
-      id: args.clipsId,
+      id: args.clipId,
       data: {
         status: "Slicing Videos",
         progress: 60
@@ -308,7 +308,7 @@ export const sliceAndStoreVideos = internalAction({
 
         // Sanitize title for filename
         const sanitizedTitle = clip.title.replace(/[^a-zA-Z0-9]/g, "_");
-        const outputName = `${args.clipsId}_${sanitizedTitle}_${editing.id}.mp4`;
+        const outputName = `${args.clipId}_${sanitizedTitle}_${editing.id}.mp4`;
         const outputPath = path.join(process.cwd(), outputName);
 
         const slicePromise = (async () => {
@@ -377,7 +377,7 @@ export const sliceAndStoreVideos = internalAction({
 
     // Update database with updated clips
     await ctx.runMutation(internal.clips.patch, {
-      id: args.clipsId,
+      id: args.clipId,
       data: {
         status: "Completed",
         progress: 100,

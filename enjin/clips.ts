@@ -14,13 +14,13 @@ import {
 } from "./_generated/server";
 import { YouTubeV3VideosResponse } from "./types";
 
-function workflowLogger(clipsId: string, ...anyColorYouLike: unknown[]) {
-  console.info(`[${clipsId}]`, ...anyColorYouLike);
+function workflowLogger(clipId: string, ...anyColorYouLike: unknown[]) {
+  console.info(`[${clipId}]`, ...anyColorYouLike);
 }
 
 export const clipsGenerationWorkflow = workflow.define({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     youtubeURL: v.string()
   },
   handler: async (step, args) => {
@@ -28,65 +28,65 @@ export const clipsGenerationWorkflow = workflow.define({
     let videoPath = null;
 
     const result = await step.runQuery(internal.clips.preWorkflowChecks, {
-      clipsId: args.clipsId,
+      clipId: args.clipId,
       youtubeURL: args.youtubeURL
     });
-    workflowLogger(args.clipsId, "succesfuly checked existence", result.exists);
+    workflowLogger(args.clipId, "succesfuly checked existence", result.exists);
 
     if (!result.exists) {
       // fetch video details & save to db
       await step.runAction(internal.clips.fetchYouTubeVideoDetails, {
-        clipsId: args.clipsId,
+        clipId: args.clipId,
         youtubeURL: args.youtubeURL
       });
 
       videoPath = await step.runAction(internal.steps.download, {
-        clipsId: args.clipsId,
+        clipId: args.clipId,
         youtubeURL: args.youtubeURL
       });
-      workflowLogger(args.clipsId, "succesfuly download video", videoPath);
+      workflowLogger(args.clipId, "succesfuly download video", videoPath);
 
       const [audioPath] = await Promise.all([
         step.runAction(internal.steps.extractAudio, {
-          clipsId: args.clipsId,
+          clipId: args.clipId,
           filepath: videoPath
         }),
         step.runAction(internal.steps.extractMediaInfo, {
-          clipsId: args.clipsId,
+          clipId: args.clipId,
           filepath: videoPath
         })
       ]);
-      workflowLogger(args.clipsId, "succesfuly extracted media info");
-      workflowLogger(args.clipsId, "succesfuly extracted audio", audioPath);
+      workflowLogger(args.clipId, "succesfuly extracted media info");
+      workflowLogger(args.clipId, "succesfuly extracted audio", audioPath);
 
       captions = await step.runAction(internal.steps.transcribeAudio, {
-        clipsId: args.clipsId,
+        clipId: args.clipId,
         filepath: audioPath
       });
-      workflowLogger(args.clipsId, "succesfuly transcribed audio");
+      workflowLogger(args.clipId, "succesfuly transcribed audio");
     } else {
       captions = result.captions;
       videoPath = result.originalVideoPath;
     }
 
     const clips = await step.runAction(internal.steps.analyzeTranscription, {
-      clipsId: args.clipsId,
+      clipId: args.clipId,
       captions
     });
-    workflowLogger(args.clipsId, "succesfuly analyzed transcription");
+    workflowLogger(args.clipId, "succesfuly analyzed transcription");
 
     await step.runAction(internal.steps.sliceAndStoreVideos, {
-      clipsId: args.clipsId,
+      clipId: args.clipId,
       filepath: videoPath!,
       clips
     });
-    workflowLogger(args.clipsId, "succesfuly sliced video");
+    workflowLogger(args.clipId, "succesfuly sliced video");
   }
 });
 
 export const fetchYouTubeVideoDetails = internalAction({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     youtubeURL: v.string()
   },
   handler: async (ctx, args) => {
@@ -105,7 +105,7 @@ export const fetchYouTubeVideoDetails = internalAction({
     const ytVideoResponse: YouTubeV3VideosResponse = await response.json();
 
     await ctx.runMutation(internal.clips.patch, {
-      id: args.clipsId,
+      id: args.clipId,
       data: {
         youtubeVideoDetail: ytVideoResponse,
         youtubeVideoId: videoId
@@ -117,7 +117,7 @@ export const fetchYouTubeVideoDetails = internalAction({
 //check if the video already have transcriptions
 export const preWorkflowChecks = internalQuery({
   args: {
-    clipsId: v.id("clips"),
+    clipId: v.id("clips"),
     youtubeURL: v.string()
   },
   returns: v.object({
@@ -156,7 +156,7 @@ export const kickstartClipsGenerationWorkflow = mutation({
   },
   handler: async (ctx, args) => {
     // store the yt url so that we can add workflow id later
-    const clipsId = await ctx.db.insert("clips", {
+    const clipId = await ctx.db.insert("clips", {
       youtubeURL: args.youtubeURL
     });
 
@@ -165,20 +165,20 @@ export const kickstartClipsGenerationWorkflow = mutation({
       ctx,
       internal.clips.clipsGenerationWorkflow,
       {
-        clipsId,
+        clipId,
         youtubeURL: args.youtubeURL
       }
     );
 
     // save the workflow id
-    await ctx.db.patch(clipsId, {
+    await ctx.db.patch(clipId, {
       workflowId,
       status: "Downloading Video",
       progress: 5
     });
 
     return {
-      clipsId,
+      clipId,
       workflowId
     };
   }
@@ -197,7 +197,7 @@ export const patch = internalMutation({
 
 export const getSlicedVideos = query({
   args: {
-    clipsId: v.id("clips")
+    clipId: v.id("clips")
   },
   returns: v.array(
     v.object({
@@ -208,7 +208,7 @@ export const getSlicedVideos = query({
     })
   ),
   handler: async (ctx, args) => {
-    const clipDoc = await ctx.db.get(args.clipsId);
+    const clipDoc = await ctx.db.get(args.clipId);
     if (!clipDoc || !clipDoc.clips) {
       return [];
     }
@@ -224,7 +224,7 @@ export const getSlicedVideos = query({
             editing.fileId as Id<"_storage">
           );
           const sanitizedTitle = clip.title.replace(/[^a-zA-Z0-9]/g, "_");
-          const name = `${args.clipsId}_${sanitizedTitle}_${editing.id}.mp4`;
+          const name = `${args.clipId}_${sanitizedTitle}_${editing.id}.mp4`;
           videosWithUrls.push({
             clipIndex: i,
             editingIndex: j,
