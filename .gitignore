@@ -52,6 +52,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+/whisper.cpp
 enjin/_generated
 *.mp4
 *.wav
