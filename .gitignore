@@ -51,6 +51,6 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-convex/_generated
+enjin/_generated
 *.mp4
 *.wav
