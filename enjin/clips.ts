@@ -1,14 +1,18 @@
 import { v } from "convex/values";
 
+import { env } from "@/env";
+
 import { workflow } from ".";
 import { internal } from "./_generated/api";
 import { Id } from "./_generated/dataModel";
 import {
+  internalAction,
   internalMutation,
   internalQuery,
   mutation,
   query
 } from "./_generated/server";
+import { YouTubeV3VideosResponse } from "./types";
 
 function workflowLogger(clipsId: string, ...anyColorYouLike: unknown[]) {
   console.info(`[${clipsId}]`, ...anyColorYouLike);
@@ -21,6 +25,7 @@ export const clipsGenerationWorkflow = workflow.define({
   },
   handler: async (step, args) => {
     let captions = null;
+    let videoPath = null;
 
     const result = await step.runQuery(internal.clips.preWorkflowChecks, {
       clipsId: args.clipsId,
@@ -28,9 +33,13 @@ export const clipsGenerationWorkflow = workflow.define({
     });
     workflowLogger(args.clipsId, "succesfuly checked existence", result.exists);
 
-    let videoPath = null;
-
     if (!result.exists) {
+      // fetch video details & save to db
+      await step.runAction(internal.clips.fetchYouTubeVideoDetails, {
+        clipsId: args.clipsId,
+        youtubeURL: args.youtubeURL
+      });
+
       videoPath = await step.runAction(internal.steps.download, {
         clipsId: args.clipsId,
         youtubeURL: args.youtubeURL
@@ -75,6 +84,36 @@ export const clipsGenerationWorkflow = workflow.define({
   }
 });
 
+export const fetchYouTubeVideoDetails = internalAction({
+  args: {
+    clipsId: v.id("clips"),
+    youtubeURL: v.string()
+  },
+  handler: async (ctx, args) => {
+    const url = new URL(args.youtubeURL);
+    const videoId = url.searchParams.get("v");
+    const response = await fetch(
+      "https://www.googleapis.com/youtube/v3/videos" +
+        `?id=${videoId}` +
+        `&key=${env.GOOGLE_API_KEY}` +
+        `&part=contentDetails,snippet`,
+      {
+        method: "GET"
+      }
+    );
+
+    const ytVideoResponse: YouTubeV3VideosResponse = await response.json();
+
+    await ctx.runMutation(internal.clips.patch, {
+      id: args.clipsId,
+      data: {
+        youtubeVideoDetail: ytVideoResponse,
+        youtubeVideoId: videoId
+      }
+    });
+  }
+});
+
 //check if the video already have transcriptions
 export const preWorkflowChecks = internalQuery({
   args: {
@@ -90,10 +129,13 @@ export const preWorkflowChecks = internalQuery({
     let originalVideoPath;
     let result = false;
 
+    const url = new URL(args.youtubeURL);
+    const videoId = url.searchParams.get("v");
+
     const clip = await ctx.db
       .query("clips")
-      // search for the clip by youtubeURL
-      .filter((q) => q.eq(q.field("youtubeURL"), args.youtubeURL))
+      // search for the clip by YouTube Video Id
+      .filter((q) => q.eq(q.field("youtubeVideoId"), videoId))
       .first();
 
     if (!clip || !clip?.captions || !clip?.captions.length) {

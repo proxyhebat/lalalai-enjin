@@ -45,6 +45,8 @@ export default defineSchema({
     status: v.optional(v.string()),
     videoFps: v.optional(v.string()),
     workflowId: v.optional(v.string()),
+    youtubeVideoDetail: v.optional(v.any()),
+    youtubeVideoId: v.optional(v.string()),
     youtubeURL: v.string()
   })
 });
