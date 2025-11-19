@@ -1,6 +1,7 @@
 "use node";
 
 import { spawn } from "child_process";
+import fs from "fs";
 import path from "path";
 
 import { createThread } from "@convex-dev/agent";
@@ -49,7 +50,8 @@ export const download = internalAction({
           id: args.clipsId,
           data: {
             status: "Extracting Metadata",
-            progress: 10
+            progress: 10,
+            originalVideoPath: filepath
           }
         });
 
@@ -280,11 +282,107 @@ ${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.e
 });
 
 //slice the video provided by clipper agent (analyzed transcription) using ffmpeg
-export const slicevideo = internalAction({
+export const sliceAndStoreVideos = internalAction({
   args: {
     clipsId: v.id("clips"),
     filepath: v.string(),
-    editings: v.array(v.any())
+    clips: v.array(v.any())
   },
-  handler: async (ctx, args) => {}
+  handler: async (ctx, args) => {
+    await ctx.runMutation(internal.clips.patch, {
+      id: args.clipsId,
+      data: {
+        status: "Slicing Videos",
+        progress: 60
+      }
+    });
+
+    const slicePromises: Promise<void>[] = [];
+
+    for (let i = 0; i < args.clips.length; i++) {
+      const clip = args.clips[i];
+      for (let j = 0; j < clip.editings.length; j++) {
+        const editing = clip.editings[j];
+        const startSec = editing.startMs / 1000;
+        const endSec = editing.endMs / 1000;
+
+        // Sanitize title for filename
+        const sanitizedTitle = clip.title.replace(/[^a-zA-Z0-9]/g, "_");
+        const outputName = `${args.clipsId}_${sanitizedTitle}_${editing.id}.mp4`;
+        const outputPath = path.join(process.cwd(), outputName);
+
+        const slicePromise = (async () => {
+          try {
+            // Slice video with FFmpeg
+            await new Promise<void>((resolve, reject) => {
+              const sliceTask = spawn(
+                "ffmpeg",
+                [
+                  "-i",
+                  args.filepath,
+                  "-ss",
+                  startSec.toString(),
+                  "-to",
+                  endSec.toString(),
+                  "-c",
+                  "copy",
+                  "-y", // Overwrite
+                  outputPath
+                ],
+                {
+                  stdio: "inherit",
+                  env: { ...process.env }
+                }
+              );
+
+              sliceTask.on("close", (code) => {
+                if (code !== 0) {
+                  reject(new Error(`FFmpeg slicing failed with code ${code}`));
+                } else {
+                  resolve();
+                }
+              });
+
+              sliceTask.on("error", (error) => {
+                reject(error);
+              });
+            });
+
+            // Read the sliced file
+            const fileBuffer = fs.readFileSync(outputPath);
+            const file = new File([fileBuffer], outputName, {
+              type: "video/mp4"
+            });
+
+            // Upload to Convex storage
+            const fileId = await ctx.storage.store(file);
+
+            // Update the clips data structure with fileId
+            args.clips[i].editings[j].fileId = fileId;
+
+            // Clean up temp file
+            fs.unlinkSync(outputPath);
+          } catch (error) {
+            console.error(`Error slicing clip ${i} editing ${j}:`, error);
+            // Continue to next, or handle as needed
+          }
+        })();
+
+        slicePromises.push(slicePromise);
+      }
+    }
+
+    // Wait for all slicing to complete in parallel
+    await Promise.all(slicePromises);
+
+    // Update database with updated clips
+    await ctx.runMutation(internal.clips.patch, {
+      id: args.clipsId,
+      data: {
+        status: "Completed",
+        progress: 100,
+        clips: args.clips
+      }
+    });
+  }
 });

@@ -24,7 +24,8 @@ export const editing = z.object({
       "none",
       "cut"
     ])
-    .default("cut")
+    .default("cut"),
+  fileId: z.string().optional()
 });
 
 export const clip = z.object({
