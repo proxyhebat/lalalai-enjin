@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { architectsDaughter, firacode, georgia } from "@/lib/fonts";
 
+import { ConvexClientProvider } from "@/components/providers/convex-client-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 
 import "./globals.css";
@@ -22,9 +23,11 @@ export default function RootLayout({
       <body
         className={`${architectsDaughter.variable} ${firacode.variable} ${georgia.variable} antialiased`}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          {children}
-        </ThemeProvider>
+        <ConvexClientProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {children}
+          </ThemeProvider>
+        </ConvexClientProvider>
       </body>
     </html>
   );
