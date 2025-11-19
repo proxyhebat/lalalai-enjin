@@ -28,7 +28,7 @@ export const download = internalAction({
 
       downloadTask.on("close", (code) => {
         if (code != 0) {
-          reject("Error while trying to download the video");
+          return reject("Error while trying to download the video");
         }
 
         const filepath = path.resolve(process.cwd(), `${args.clipsId}.mp4`);
@@ -52,9 +52,69 @@ export const download = internalAction({
 export const extractMediaInfo = internalAction({
   args: {
     clipsId: v.id("clips"),
-    youtubeURL: v.string()
+    filepath: v.string()
   },
-  handler: async (ctx, args) => {}
+  handler: async (ctx, args) => {
+    return new Promise((resolve, reject) => {
+      // Extract video metadata including FPS
+      const probeTask = spawn(
+        "ffprobe",
+        [
+          "-v",
+          "quiet",
+          "-print_format",
+          "json",
+          "-show_format",
+          "-show_streams",
+          args.filepath
+        ],
+        {
+          stdio: ["pipe", "pipe", "pipe"],
+          env: { ...process.env }
+        }
+      );
+
+      let probeOutput = "";
+      probeTask.stdout.on("data", (data) => {
+        probeOutput += data.toString();
+      });
+
+      probeTask.on("close", async (code) => {
+        if (code != 0) {
+          return reject("Error while trying to download the video");
+        }
+
+        try {
+          const metadata = JSON.parse(probeOutput);
+          const videoStream = metadata.streams.find(
+            (s: any) => s.codec_type === "video"
+          );
+          const fps = videoStream ? videoStream.r_frame_rate : 30; // fallback to 30
+
+          await ctx.runMutation(internal.clips.patch, {
+            id: args.clipsId,
+            data: {
+              status: "Extracting Audio",
+              progress: 15,
+              videoFps: fps // Store the real FPS
+            }
+          });
+
+          resolve(void 0);
+        } catch (error) {
+          await ctx.runMutation(internal.clips.patch, {
+            id: args.clipsId,
+            data: {
+              status: "Failed while parsing media metadata",
+              progress: 0,
+              error
+            }
+          });
+          return reject("Failed while parsing media metadata");
+        }
+      });
+    });
+  }
 });
 
 //extract audio using ffmpeg

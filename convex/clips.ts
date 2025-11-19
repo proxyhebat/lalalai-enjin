@@ -5,7 +5,7 @@ import { internal } from "./_generated/api";
 import { internalMutation, mutation } from "./_generated/server";
 
 function workflowLogger(clipsId: string, ...anyColorYouLike: unknown[]) {
-  console.info(`[INFO]::[${clipsId}]`, ...anyColorYouLike);
+  console.info(`[${clipsId}]`, ...anyColorYouLike);
 }
 
 export const clipsGenerationWorkflow = workflow.define({
@@ -14,12 +14,21 @@ export const clipsGenerationWorkflow = workflow.define({
     youtubeURL: v.string()
   },
   handler: async (step, args) => {
+    // ############################################### DOWNLOADING THE VIDEO
     workflowLogger(args.clipsId, "downloading the video", args.youtubeURL);
     const downloadResult = await step.runAction(internal.steps.download, {
       clipsId: args.clipsId,
       youtubeURL: args.youtubeURL
     });
     workflowLogger(args.clipsId, "succesfuly download video", downloadResult);
+
+    // ############################################### EXTRACTING MEDIA INFO
+    workflowLogger(args.clipsId, "extracting media info", downloadResult);
+    await step.runAction(internal.steps.extractMediaInfo, {
+      clipsId: args.clipsId,
+      filepath: downloadResult
+    });
+    workflowLogger(args.clipsId, "succesfuly extracted media info");
   }
 });
 
