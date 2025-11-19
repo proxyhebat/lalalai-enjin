@@ -18,7 +18,7 @@ import { Caption } from "@/lib/types";
 import { components, internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 import { clipper } from "./agents/clipper";
-import { clipperOutputSchema } from "./schemas/clipper";
+import { clipperOutputSchema } from "./zod_schemas/clipper";
 
 //download video using yt-dlp
 export const download = internalAction({
