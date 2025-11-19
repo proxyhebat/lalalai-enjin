@@ -34,9 +34,9 @@ export const clip = z.object({
   hashtags: z.array(z.string().max(30)).max(10).optional(),
   targetDurationMs: z
     .number()
-    .min(15000)
-    .max(90000)
-    .describe("15-90 seconds optimal"),
+    .min(45000)
+    .max(60000)
+    .describe("45-60 seconds optimal"),
   platform: z
     .enum(["youtube-shorts", "tiktok", "instagram", "general"])
     .default("general"),
