@@ -20,7 +20,7 @@ import { api } from "@/convex/_generated/api";
 import { formSchema, FormSchema } from "./schema";
 
 export function DemoForm() {
-  const kickstart = useMutation(api.clips.generate);
+  const kickstart = useMutation(api.clips.kickstartClipsGenerationWorkflow);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),

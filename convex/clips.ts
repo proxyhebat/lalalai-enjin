@@ -8,7 +8,7 @@ function workflowLogger(clipsId: string, ...anyColorYouLike: unknown[]) {
   console.info(`[INFO]::[${clipsId}]`, ...anyColorYouLike);
 }
 
-export const generateClipsWorkflow = workflow.define({
+export const clipsGenerationWorkflow = workflow.define({
   args: {
     clipsId: v.id("clips"),
     youtubeURL: v.string()
@@ -23,7 +23,7 @@ export const generateClipsWorkflow = workflow.define({
   }
 });
 
-export const generate = mutation({
+export const kickstartClipsGenerationWorkflow = mutation({
   args: {
     youtubeURL: v.string()
   },
@@ -36,7 +36,7 @@ export const generate = mutation({
     // kickstart the workflow
     const workflowId: string = await workflow.start(
       ctx,
-      internal.clips.generateClipsWorkflow,
+      internal.clips.clipsGenerationWorkflow,
       {
         clipsId,
         youtubeURL: args.youtubeURL
