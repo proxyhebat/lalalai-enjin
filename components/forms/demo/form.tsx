@@ -1,6 +1,7 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "convex/react";
 import { useForm } from "react-hook-form";
 
 import {
@@ -14,9 +15,13 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+import { api } from "@/convex/_generated/api";
+
 import { formSchema, FormSchema } from "./schema";
 
 export function DemoForm() {
+  const kickstart = useMutation(api.clips.generate);
+
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -24,11 +29,10 @@ export function DemoForm() {
     }
   });
 
-  function onSubmit(values: FormSchema) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  const onSubmit = async ({ youtubeURL }: FormSchema) => {
+    const result = await kickstart({ youtubeURL });
+    console.log("@fe::debug::onSubmit::result", result);
+  };
 
   return (
     <Form {...form}>
