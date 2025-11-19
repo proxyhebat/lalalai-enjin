@@ -1,5 +1,6 @@
 import { fetchQuery } from "convex/nextjs";
 import { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { use } from "react";
 
 import { api } from "@/enjin/_generated/api";
@@ -22,8 +23,18 @@ export async function generateMetadata({
   params: Promise<{ id: Id<"clips"> }>;
 }): Promise<Metadata> {
   const clipId = (await params).id;
-  const clip = await fetchQuery(api.clips.get, { id: clipId });
+
+  try {
+    const clip = await fetchQuery(api.clips.get, { id: clipId });
+    if (!clip) {
+      return redirect("/not-found");
+    }
+  } catch (error) {
+    console.error(error);
+    return redirect("/not-found");
+  }
+
   return {
-    title: clip?._id + " - Enjin Clips"
+    title: clipId + " - Enjin Clips"
   };
 }
