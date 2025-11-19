@@ -1,36 +1,73 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lalalai Enjin
 
-## Getting Started
+![Banner](public/images/placeholder.jpeg)
 
-First, run the development server:
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Node.js Version](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen)](https://nodejs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14+-black)](https://nextjs.org/)
+[![Convex](https://img.shields.io/badge/Convex-1.0+-orange)](https://www.convex.dev/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-gpt--5--mini-green)](https://openai.com/)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+Just another project that takes YouTube videos and cuts them into short viral clips using AI. Nobody will care, but here it is.
+
+## What it does
+
+- Downloads YouTube vids
+- Transcribes audio with Whisper
+- AI finds the juicy parts
+- Slices into 45-60s clips
+- Stores them somewhere
+
+## Tech stuff
+
+- Next.js, React, TS, Tailwind
+- Convex for backend
+- OpenAI GPT-5-mini + Whisper
+- FFmpeg, yt-dlp for video stuff
+
+## Setup (if you care)
+
+Need Node >=18, pnpm, FFmpeg, yt-dlp, OpenAI key, Convex account.
+
+1. Clone it: `git clone https://github.com/aryasena/lalalai-enjin.git && cd lalalai-enjin`
+2. Install: `pnpm install`
+3. Env: `cp .env.example .env.local` (add your keys)
+4. Convex: `npx convex dev --once`
+5. Run: `pnpm dev`
+
+## How to use
+
+Paste a YouTube URL, wait, get clips. Easy.
+
+## Code structure
+
+```
+app/          # Next.js stuff
+components/   # React bits
+enjin/        # Backend logic
+lib/          # Utils
+public/       # Images etc.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API stuff
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Mutations: `kickstartClipsGenerationWorkflow`, `patch`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Queries: `getSlicedVideos`, `preWorkflowChecks`
 
-## Learn More
+## Contributing
 
-To learn more about Next.js, take a look at the following resources:
+Fork it, make changes, PR. Whatever.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## License
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+MIT, do what you want.
 
-## Deploy on Vercel
+## Thanks to
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- Convex
+- OpenAI
+- Remotion
+- shadcn/ui
+- tweakcn
