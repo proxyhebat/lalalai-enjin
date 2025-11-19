@@ -16,19 +16,33 @@ export const clipsGenerationWorkflow = workflow.define({
   handler: async (step, args) => {
     // ############################################### DOWNLOADING THE VIDEO
     workflowLogger(args.clipsId, "downloading the video", args.youtubeURL);
-    const downloadResult = await step.runAction(internal.steps.download, {
+    const videoPath = await step.runAction(internal.steps.download, {
       clipsId: args.clipsId,
       youtubeURL: args.youtubeURL
     });
-    workflowLogger(args.clipsId, "succesfuly download video", downloadResult);
+    workflowLogger(args.clipsId, "succesfuly download video", videoPath);
 
     // ############################################### EXTRACTING MEDIA INFO
-    workflowLogger(args.clipsId, "extracting media info", downloadResult);
+    workflowLogger(args.clipsId, "extracting media info", videoPath);
     await step.runAction(internal.steps.extractMediaInfo, {
       clipsId: args.clipsId,
-      filepath: downloadResult
+      filepath: videoPath
     });
     workflowLogger(args.clipsId, "succesfuly extracted media info");
+
+    // ###################################################### EXTRACT AUDIO
+    const audioPath = await step.runAction(internal.steps.extractAudio, {
+      clipsId: args.clipsId,
+      filepath: videoPath
+    });
+    workflowLogger(args.clipsId, "succesfuly extracted audio", audioPath);
+
+    // ################################################### TRANSCRIBE AUDIO
+    const captions = await step.runAction(internal.steps.transcribeAudio, {
+      clipsId: args.clipsId,
+      filepath: audioPath
+    });
+    workflowLogger(args.clipsId, "succesfuly transcribed audio");
   }
 });
 

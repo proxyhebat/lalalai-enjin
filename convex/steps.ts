@@ -3,6 +3,12 @@
 import { spawn } from "child_process";
 import path from "path";
 
+import {
+  downloadWhisperModel,
+  installWhisperCpp,
+  transcribe,
+  convertToCaptions
+} from "@remotion/install-whisper-cpp";
 import { v } from "convex/values";
 
 import { internal } from "./_generated/api";
@@ -28,7 +34,7 @@ export const download = internalAction({
 
       downloadTask.on("close", (code) => {
         if (code != 0) {
-          return reject("Error while trying to download the video");
+          reject("Error while trying to download the video");
         }
 
         const filepath = path.resolve(process.cwd(), `${args.clipsId}.mp4`);
@@ -81,14 +87,15 @@ export const extractMediaInfo = internalAction({
 
       probeTask.on("close", async (code) => {
         if (code != 0) {
-          return reject("Error while trying to download the video");
+          reject("Error while trying to download the video");
         }
 
         try {
           const metadata = JSON.parse(probeOutput);
           const videoStream = metadata.streams.find(
-            (s: any) => s.codec_type === "video"
+            (s: { codec_type: string }) => s.codec_type === "video"
           );
+
           const fps = videoStream ? videoStream.r_frame_rate : 30; // fallback to 30
 
           await ctx.runMutation(internal.clips.patch, {
@@ -110,7 +117,7 @@ export const extractMediaInfo = internalAction({
               error
             }
           });
-          return reject("Failed while parsing media metadata");
+          reject("Failed while parsing media metadata");
         }
       });
     });
@@ -121,25 +128,107 @@ export const extractMediaInfo = internalAction({
 export const extractAudio = internalAction({
   args: {
     clipsId: v.id("clips"),
-    youtubeURL: v.string()
+    filepath: v.string()
   },
-  handler: async (ctx, args) => {}
+  returns: v.string(),
+  handler: async (ctx, args) => {
+    return new Promise<string>((resolve, reject) => {
+      const outputPath = path.join(process.cwd(), `${args.clipsId}.wav`);
+
+      const extractTask = spawn(
+        "ffmpeg",
+        [
+          "-i",
+          args.filepath,
+          "-ar",
+          "16000",
+          "-ac",
+          "2",
+          "-c:a",
+          "pcm_s16le",
+          outputPath,
+          "-y"
+        ],
+        {
+          stdio: "inherit",
+          env: { ...process.env }
+        }
+      );
+
+      extractTask.on("close", async (code) => {
+        if (code !== 0) {
+          reject(new Error(`Audio extraction failed with code ${code}`));
+        }
+
+        await ctx.runMutation(internal.clips.patch, {
+          id: args.clipsId,
+          data: {
+            status: "Transcribing Audio",
+            progress: 20
+          }
+        });
+
+        resolve(outputPath);
+      });
+
+      extractTask.on("error", (error) => {
+        console.error("Extraction error:", error);
+        reject(error);
+      });
+    });
+  }
 });
 
 //transcribe audio using whisper.cpp
 export const transcribeAudio = internalAction({
   args: {
     clipsId: v.id("clips"),
-    youtubeURL: v.string()
+    filepath: v.string()
   },
-  handler: async (ctx, args) => {}
+  handler: async (ctx, args) => {
+    // Install Whisper if needed
+    const { alreadyExisted: _whisperExist } = await installWhisperCpp({
+      to: path.join(process.cwd(), "whisper.cpp"),
+      version: "1.5.5"
+    });
+
+    const { alreadyExisted: _modelExist } = await downloadWhisperModel({
+      model: "base",
+      folder: path.join(process.cwd(), "whisper.cpp")
+    });
+
+    const { transcription } = await transcribe({
+      inputPath: args.filepath,
+      whisperPath: path.join(process.cwd(), "whisper.cpp"),
+      whisperCppVersion: "1.5.5",
+      model: "base",
+      tokenLevelTimestamps: true
+    });
+
+    const { captions } = convertToCaptions({
+      transcription,
+      combineTokensWithinMilliseconds: 200
+    });
+
+    // Update captions in database
+    await ctx.runMutation(internal.clips.patch, {
+      id: args.clipsId,
+      data: {
+        status: "Analyzing & Understanding the video",
+        progress: 30,
+        captions
+      }
+    });
+
+    return captions;
+  }
 });
 
 //llm analyze potential viral clips on the video using transcribed audio
 export const analyzeTranscription = internalAction({
   args: {
     clipsId: v.id("clips"),
-    youtubeURL: v.string()
+    filepath: v.string()
   },
   handler: async (ctx, args) => {}
 });

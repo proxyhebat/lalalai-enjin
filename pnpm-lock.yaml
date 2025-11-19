@@ -9,7 +9,7 @@ importers:
     dependencies:
       "@convex-dev/workflow":
         specifier: ^0.3.1
-        version: 0.3.1(@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0)))(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0))
+        version: 0.3.1(@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0)))(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))
       "@hookform/resolvers":
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.66.1(react@19.2.0))
@@ -19,6 +19,9 @@ importers:
       "@radix-ui/react-slot":
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.6)(react@19.2.0)
+      "@remotion/install-whisper-cpp":
+        specifier: 4.0.376
+        version: 4.0.376
       "@t3-oss/env-nextjs":
         specifier: ^0.13.8
         version: 0.13.8(typescript@5.9.3)(zod@4.1.12)
@@ -32,8 +35,8 @@ importers:
         specifier: ^2.1.1
         version: 2.1.1
       convex:
-        specifier: ^1.29.2
-        version: 1.29.2(react@19.2.0)
+        specifier: ^1.29.3
+        version: 1.29.3(react@19.2.0)
       lucide-react:
         specifier: ^0.554.0
         version: 0.554.0(react@19.2.0)
@@ -996,6 +999,18 @@ packages:
       "@types/react":
         optional: true
 
+  "@remotion/captions@4.0.376":
+    resolution:
+      {
+        integrity: sha512-FD3giTRzTuGOoKn25YjGA94vhjrJy9+IjDueE9Zl7+RKYPNBdGNfHvxfjcwHZrNJgYyEudFdaqaZeEJtqtZVSQ==
+      }
+
+  "@remotion/install-whisper-cpp@4.0.376":
+    resolution:
+      {
+        integrity: sha512-aLJO193OT1X/6H+fD0ecIeW6S7Rxm9EiiG7kJ25W/UA9/RSRFEFcG0oEE0zMJEHMNplVKTMOXW08dTaB4HnW6g==
+      }
+
   "@rtsao/scc@1.1.0":
     resolution:
       {
@@ -1782,10 +1797,10 @@ packages:
       zod:
         optional: true
 
-  convex@1.29.2:
+  convex@1.29.3:
     resolution:
       {
-        integrity: sha512-9QCj53/zFV+hHZRP8epU41a3NmOkYDdEtpvSPKjAZp6l60NMN+O3fyOX4r5Y6yzPIhsUpJvMH6xB5xwJTLz92A==
+        integrity: sha512-tg5TXzMjpNk9m50YRtdp6US+t7ckxE4E+7DNKUCjJ2MupQs2RBSPF/z5SNN4GUmQLSfg0eMILDySzdAvjTrhnw==
       }
     engines: { node: ">=18.0.0", npm: ">=7.0.0" }
     hasBin: true
@@ -3907,17 +3922,17 @@ snapshots:
       "@babel/helper-string-parser": 7.27.1
       "@babel/helper-validator-identifier": 7.28.5
 
-  "@convex-dev/workflow@0.3.1(@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0)))(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0))":
+  "@convex-dev/workflow@0.3.1(@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0)))(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))":
     dependencies:
-      "@convex-dev/workpool": 0.3.0(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0))
+      "@convex-dev/workpool": 0.3.0(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))
       async-channel: 0.2.0
-      convex: 1.29.2(react@19.2.0)
-      convex-helpers: 0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
+      convex: 1.29.3(react@19.2.0)
+      convex-helpers: 0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
 
-  "@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.2(react@19.2.0))":
+  "@convex-dev/workpool@0.3.0(convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12))(convex@1.29.3(react@19.2.0))":
     dependencies:
-      convex: 1.29.2(react@19.2.0)
-      convex-helpers: 0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
+      convex: 1.29.3(react@19.2.0)
+      convex-helpers: 0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12)
 
   "@emnapi/core@1.7.1":
     dependencies:
@@ -4269,6 +4284,12 @@ snapshots:
       react: 19.2.0
     optionalDependencies:
       "@types/react": 19.2.6
+
+  "@remotion/captions@4.0.376": {}
+
+  "@remotion/install-whisper-cpp@4.0.376":
+    dependencies:
+      "@remotion/captions": 4.0.376
 
   "@rtsao/scc@1.1.0": {}
 
@@ -4719,15 +4740,15 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex-helpers@0.1.105(convex@1.29.2(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12):
+  convex-helpers@0.1.105(convex@1.29.3(react@19.2.0))(react@19.2.0)(typescript@5.9.3)(zod@4.1.12):
     dependencies:
-      convex: 1.29.2(react@19.2.0)
+      convex: 1.29.3(react@19.2.0)
     optionalDependencies:
       react: 19.2.0
       typescript: 5.9.3
       zod: 4.1.12
 
-  convex@1.29.2(react@19.2.0):
+  convex@1.29.3(react@19.2.0):
     dependencies:
       esbuild: 0.25.4
       prettier: 3.6.2
