@@ -195,46 +195,12 @@ export const patch = internalMutation({
   }
 });
 
-export const getSlicedVideos = query({
+export const get = query({
   args: {
-    clipId: v.id("clips")
+    id: v.id("clips")
   },
-  returns: v.array(
-    v.object({
-      clipIndex: v.number(),
-      editingIndex: v.number(),
-      name: v.string(),
-      url: v.nullable(v.string())
-    })
-  ),
   handler: async (ctx, args) => {
-    const clipDoc = await ctx.db.get(args.clipId);
-    if (!clipDoc || !clipDoc.clips) {
-      return [];
-    }
-
-    const videosWithUrls = [];
-
-    for (let i = 0; i < clipDoc.clips.length; i++) {
-      const clip = clipDoc.clips[i];
-      for (let j = 0; j < clip.editings.length; j++) {
-        const editing = clip.editings[j];
-        if (editing.fileId) {
-          const url = await ctx.storage.getUrl(
-            editing.fileId as Id<"_storage">
-          );
-          const sanitizedTitle = clip.title.replace(/[^a-zA-Z0-9]/g, "_");
-          const name = `${args.clipId}_${sanitizedTitle}_${editing.id}.mp4`;
-          videosWithUrls.push({
-            clipIndex: i,
-            editingIndex: j,
-            name,
-            url
-          });
-        }
-      }
-    }
-
-    return videosWithUrls;
+    const clip = await ctx.db.get(args.id);
+    return clip;
   }
 });
