@@ -28,7 +28,7 @@ Just another project that takes YouTube videos and cuts them into short viral cl
 
 ## Setup (if you care)
 
-Need Node >=18, pnpm, FFmpeg, yt-dlp, OpenAI key, Convex account.
+Need Node >=18, pnpm, FFmpeg, yt-dlp, OpenAI key.
 
 1. Clone it: `git clone https://github.com/aryasena/lalalai-enjin.git && cd lalalai-enjin`
 2. Install: `pnpm install`
