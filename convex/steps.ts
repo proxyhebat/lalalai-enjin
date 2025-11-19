@@ -1,9 +1,11 @@
 "use node";
 
 import { spawn } from "child_process";
+import path from "path";
 
 import { v } from "convex/values";
 
+import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
 
 //download video using yt-dlp
@@ -28,7 +30,19 @@ export const download = internalAction({
         if (code != 0) {
           reject("Error while trying to download the video");
         }
-        resolve(`${args.clipsId}.mp4`);
+
+        const filepath = path.resolve(process.cwd(), `${args.clipsId}.mp4`);
+
+        // update status & progress
+        ctx.runMutation(internal.clips.patch, {
+          id: args.clipsId,
+          data: {
+            status: "Extracting Metadata",
+            progress: 10
+          }
+        });
+
+        resolve(filepath);
       });
     });
   }

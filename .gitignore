@@ -52,3 +52,5 @@ yarn-error.log*
 next-env.d.ts
 
 convex/_generated
+*.mp4
+*.wav

@@ -15,6 +15,8 @@
     pkgs.git
     pkgs.nodejs
     pkgs.nodePackages_latest.pnpm
+    pkgs.yt-dlp
+    pkgs.ffmpeg
   ];
 
   # https://devenv.sh/languages/

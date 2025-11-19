@@ -2,7 +2,7 @@ import { v } from "convex/values";
 
 import { workflow } from ".";
 import { internal } from "./_generated/api";
-import { mutation } from "./_generated/server";
+import { internalMutation, mutation } from "./_generated/server";
 
 function workflowLogger(clipsId: string, ...anyColorYouLike: unknown[]) {
   console.info(`[INFO]::[${clipsId}]`, ...anyColorYouLike);
@@ -45,12 +45,24 @@ export const generate = mutation({
 
     // save the workflow id
     await ctx.db.patch(clipsId, {
-      workflowId
+      workflowId,
+      status: "Downloading Video",
+      progress: 5
     });
 
     return {
       clipsId,
       workflowId
     };
+  }
+});
+
+export const patch = internalMutation({
+  args: {
+    id: v.id("clips"),
+    data: v.any()
+  },
+  handler: async (ctx, args) => {
+    await ctx.db.patch(args.id, args.data);
   }
 });
