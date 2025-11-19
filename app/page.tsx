@@ -26,11 +26,17 @@ export default function Home() {
           <DemoForm />
           <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
             Found a bug or want to suggest a new feature? Contribute to the{" "}
-            <a href="#" className="font-medium text-accent underline">
+            <a
+              href="https://codeberg.org/aryasena/lalalai-enjin"
+              className="font-medium text-accent underline"
+            >
               Source
             </a>{" "}
             or the{" "}
-            <a href="#" className="font-medium text-accent underline">
+            <a
+              href="https://codeberg.org/aryasena/lalalai-enjin/issues"
+              className="font-medium text-accent underline"
+            >
               Open an Issue
             </a>
           </p>
@@ -38,7 +44,7 @@ export default function Home() {
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
           <a
             className="bg-primary hover:bg-primary/80 text-background flex h-12 w-full items-center justify-center gap-2 rounded-full px-5 transition-colors md:w-[158px]"
-            href="#"
+            href="https://codeberg.org/aryasena/lalalai-enjin"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -46,7 +52,7 @@ export default function Home() {
           </a>
           <a
             className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-secondary text-secondary hover:border-secondary/80 hover:text-secondary/80 px-5 transition-colors md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            href="https://codeberg.org/aryasena/lalalai-enjin"
             target="_blank"
             rel="noopener noreferrer"
           >
