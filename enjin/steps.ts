@@ -3,16 +3,21 @@
 import { spawn } from "child_process";
 import path from "path";
 
+import { createThread } from "@convex-dev/agent";
 import {
   downloadWhisperModel,
   installWhisperCpp,
   transcribe,
-  convertToCaptions
+  toCaptions
 } from "@remotion/install-whisper-cpp";
 import { v } from "convex/values";
 
-import { internal } from "./_generated/api";
+import { Caption } from "@/lib/types";
+
+import { components, internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
+import { clipper } from "./agents/clipper";
+import { clipperOutputSchema } from "./schemas/clipper";
 
 //download video using yt-dlp
 export const download = internalAction({
@@ -186,18 +191,20 @@ export const transcribeAudio = internalAction({
     filepath: v.string()
   },
   handler: async (ctx, args) => {
-    // Install Whisper if needed
-    const { alreadyExisted: _whisperExist } = await installWhisperCpp({
-      to: path.join(process.cwd(), "whisper.cpp"),
-      version: "1.5.5"
-    });
+    await Promise.all([
+      // Install Whisper if needed
+      installWhisperCpp({
+        to: path.join(process.cwd(), "whisper.cpp"),
+        version: "1.5.5"
+      }),
+      // Download Whisper model if needed
+      downloadWhisperModel({
+        model: "base",
+        folder: path.join(process.cwd(), "whisper.cpp")
+      })
+    ]);
 
-    const { alreadyExisted: _modelExist } = await downloadWhisperModel({
-      model: "base",
-      folder: path.join(process.cwd(), "whisper.cpp")
-    });
-
-    const { transcription } = await transcribe({
+    const whisperCppOutput = await transcribe({
       inputPath: args.filepath,
       whisperPath: path.join(process.cwd(), "whisper.cpp"),
       whisperCppVersion: "1.5.5",
@@ -205,9 +212,8 @@ export const transcribeAudio = internalAction({
       tokenLevelTimestamps: true
     });
 
-    const { captions } = convertToCaptions({
-      transcription,
-      combineTokensWithinMilliseconds: 200
+    const { captions } = toCaptions({
+      whisperCppOutput
     });
 
     // Update captions in database
@@ -228,7 +234,47 @@ export const transcribeAudio = internalAction({
 export const analyzeTranscription = internalAction({
   args: {
     clipsId: v.id("clips"),
-    filepath: v.string()
+    captions: v.any()
   },
-  handler: async (ctx, args) => {}
+  handler: async (ctx, args) => {
+    const threadId = await createThread(ctx, components.agent);
+
+    const prompt = `Analyze this video transcript and identify 3-5 high-value clip opportunities.
+
+Transcript with timestamps:
+${args.captions.map((c: Caption) => `[${(c.startMs / 1000).toFixed(1)}s - ${(c.endMs / 1000).toFixed(1)}s] ${c.text}`).join("\n")}
+
+**IMPORTANT NOTE**:
+
+- Only include clips that are relevant to the main topic of the video.
+- Avoid including clips that are too short or too long.
+- Make sure the clips are visually interesting and engaging.
+- Use a variety of angles and perspectives to create a dynamic video.
+- Consider the audience and their interests when selecting clips.
+- Response in JSON only as defined by the schema. No Additional Information or Reply.
+`;
+
+    const result = await clipper.generateObject(
+      ctx,
+      { threadId },
+      {
+        prompt,
+        output: "object",
+        schema: clipperOutputSchema
+      }
+    );
+
+    const clips = result.object;
+
+    await ctx.runMutation(internal.clips.patch, {
+      id: args.clipsId,
+      data: {
+        status: "Editing the clips",
+        progress: 50,
+        clips
+      }
+    });
+
+    return clips;
+  }
 });

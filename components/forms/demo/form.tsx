@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
-import { api } from "@/convex/_generated/api";
+import { api } from "@/enjin/_generated/api";
 
 import { formSchema, FormSchema } from "./schema";
 
