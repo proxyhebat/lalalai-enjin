@@ -3,7 +3,6 @@
 import { Player } from "@remotion/player";
 import { useQuery } from "convex/react";
 import Link from "next/link";
-import { toast } from "sonner";
 
 import { wipToast } from "@/lib/utils";
 
