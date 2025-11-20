@@ -1,4 +1,20 @@
 services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_CONVEX_URL=http://backend:3210
+    networks:
+      - app
+
   backend:
     # Change this to :${REV} if you want to pin to a specific version
     image: ghcr.io/get-convex/convex-backend:latest
@@ -43,6 +59,8 @@ services:
       test: curl -f http://localhost:3210/version
       interval: 5s
       start_period: 10s
+    networks:
+      - app
 
   dashboard:
     # Change this to :${REV} if you want to pin to a specific version
@@ -51,11 +69,18 @@ services:
     stop_signal: SIGINT
     ports:
       - "${DASHBOARD_PORT:-6791}:6791"
+    env_file:
+      - .env
     environment:
       - NEXT_PUBLIC_DEPLOYMENT_URL=${NEXT_PUBLIC_DEPLOYMENT_URL:-http://127.0.0.1:${PORT:-3210}}
     depends_on:
       backend:
         condition: service_healthy
+    networks:
+      - app
 
 volumes:
   data:
+
+networks:
+  app:
