@@ -4,7 +4,7 @@ import { DemoForm } from "@/components/forms/demo/form";
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-8 md:flex-row max-w-5xl mx-auto min-h-screen items-center justify-center font-sans px-8 lg:px-16">
+    <div className="flex flex-col gap-8 md:flex-row max-w-5xl mx-auto min-h-screen items-center justify-center px-8 lg:px-16">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 sm:items-start">
         <Image
           className="hue-rotate-360 grayscale-75 scale-110"
@@ -48,15 +48,15 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Get Started
+            Contribute
           </a>
           <a
             className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-secondary text-secondary hover:border-secondary/80 hover:text-secondary/80 px-5 transition-colors md:w-[158px]"
-            href="https://codeberg.org/aryasena/lalalai-enjin"
+            href="https://codeberg.org/aryasena/lalalai-enjin/issues"
             target="_blank"
             rel="noopener noreferrer"
           >
-            Documentation
+            Open an Issue
           </a>
         </div>
       </main>

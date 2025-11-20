@@ -54,7 +54,7 @@ public/       # Images etc.
 
 Mutations: `kickstartClipsGenerationWorkflow`, `patch`
 
-Queries: `getSlicedVideos`, `preWorkflowChecks`
+Queries: `preWorkflowChecks`
 
 ## Contributing
 
