@@ -4,7 +4,6 @@ import { env } from "@/env";
 
 import { workflow } from ".";
 import { internal } from "./_generated/api";
-import { Id } from "./_generated/dataModel";
 import {
   internalAction,
   internalMutation,
@@ -201,6 +200,7 @@ export const get = query({
   },
   handler: async (ctx, args) => {
     const clip = await ctx.db.get(args.id);
+    delete clip?.workflowId;
     return clip;
   }
 });

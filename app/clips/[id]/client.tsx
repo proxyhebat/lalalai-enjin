@@ -1,21 +1,81 @@
 "use client";
 
+// Import Player and CaptionedVideo only where needed
 import { Player } from "@remotion/player";
 import { useQuery } from "convex/react";
+import { DownloadCloud, Share } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 import { parseYouTubeDuration, wipToast } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
+import {
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger
+} from "@/components/ui/drawer";
 
 import { api } from "@/enjin/_generated/api";
 import { Id } from "@/enjin/_generated/dataModel";
 import { CaptionedVideo } from "@/remotion/CaptionedVideo";
 
-// dummy
-const VIDEO_HEIGHT = 1080;
-const VIDEO_WIDTH = 1920;
+function VideoPreviewDrawer({
+  clipData,
+  captions,
+  videoFps,
+  targetDurationMs,
+  title
+}: {
+  clipData: any;
+  captions: any[];
+  videoFps: string | undefined;
+  targetDurationMs: number;
+  title: string;
+}) {
+  const VIDEO_HEIGHT = 1080;
+  const VIDEO_WIDTH = 1920;
+
+  return (
+    <Drawer>
+      <DrawerTrigger asChild>
+        <Button>Preview Video</Button>
+      </DrawerTrigger>
+      <DrawerContent className="max-h-[80vh]">
+        <DrawerHeader>
+          <DrawerTitle>{title}</DrawerTitle>
+          <DrawerDescription>Preview of the generated clip</DrawerDescription>
+        </DrawerHeader>
+        <div className="max-w-xl relative w-full mx-auto pb-8">
+          <div className="relative aspect-video bg-muted rounded-lg overflow-hidden mx-auto">
+            <Player
+              component={CaptionedVideo}
+              inputProps={{
+                clipData,
+                captions
+              }}
+              fps={Number(videoFps?.split("/")[0] ?? 30)}
+              compositionHeight={VIDEO_HEIGHT}
+              compositionWidth={VIDEO_WIDTH}
+              style={{
+                width: "100%",
+                height: "100%"
+              }}
+              durationInFrames={
+                Math.round(targetDurationMs / 1000) *
+                Number(videoFps?.split("/")[0] ?? 30)
+              }
+              controls
+            />
+          </div>
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
 
 export default function Client({ clipId }: { clipId: Id<"clips"> }) {
   const clip = useQuery(api.clips.get, { id: clipId });
@@ -116,11 +176,17 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                 {clip?.status || "Processing"}
               </span>
             </div>
-            <div className="bg-muted rounded-full h-2">
-              <div
-                className="bg-primary h-2 rounded-full transition-all duration-300"
-                style={{ width: `${clip?.progress || 0}%` }}
-              ></div>
+            <div className="space-y-2">
+              <div className="bg-muted rounded-full h-2">
+                <div
+                  className="bg-primary h-2 rounded-full transition-all duration-300"
+                  style={{ width: `${clip?.progress || 0}%` }}
+                ></div>
+              </div>
+              <div className="flex justify-between text-sm text-muted-foreground">
+                <span>Progress</span>
+                <span>{clip?.progress || 0}%</span>
+              </div>
             </div>
           </div>
         </div>
@@ -139,33 +205,14 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
             {clip?.clips?.map((x) => (
               <div key={x.title}>
                 <div className="bg-muted/50 border border-border overflow-hidden rounded-lg">
-                  <div className="bg-muted relative aspect-video">
-                    <Player
-                      className="absolute"
-                      component={CaptionedVideo}
-                      inputProps={{
-                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-                        clipData: x as any,
-                        captions: clip.captions ?? []
-                      }}
-                      fps={Number(clip.videoFps?.split("/")[0] ?? 30)}
-                      compositionHeight={VIDEO_HEIGHT}
-                      compositionWidth={VIDEO_WIDTH}
-                      style={{
-                        // Can't use tailwind class for width since player's default styles take presedence over tailwind's,
-                        // but not over inline styles
-                        width: "100%"
-                      }}
-                      durationInFrames={
-                        Math.round(x.targetDurationMs / 1000) *
-                        Number(clip.videoFps?.split("/")[0] ?? 30)
-                      }
-                      controls
-                      // autoPlay
-                      // loop
-                    />
-                    <div className="absolute right-2 bottom-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
-                      {Math.round(x.targetDurationMs / 1000)}s
+                  <div className="bg-muted relative aspect-video flex items-center justify-center">
+                    <div className="text-center space-y-2">
+                      <div className="text-muted-foreground text-sm">
+                        Video Preview
+                      </div>
+                      <div className="absolute right-2 bottom-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
+                        {Math.round(x.targetDurationMs / 1000)}s
+                      </div>
                     </div>
                   </div>
                   <div className="p-4">
@@ -173,8 +220,19 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                       {x.title}
                     </h3>
                     <div className="flex gap-2">
-                      <Button onClick={wipToast}>Download</Button>
-                      <Button onClick={wipToast}>Share</Button>
+                      <VideoPreviewDrawer
+                        clipData={x}
+                        captions={clip.captions ?? []}
+                        videoFps={clip.videoFps}
+                        targetDurationMs={x.targetDurationMs}
+                        title={x.title}
+                      />
+                      <Button onClick={wipToast}>
+                        <DownloadCloud />
+                      </Button>
+                      <Button onClick={wipToast}>
+                        <Share />
+                      </Button>
                     </div>
                   </div>
                 </div>

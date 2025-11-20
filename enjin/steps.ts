@@ -29,9 +29,18 @@ export const download = internalAction({
   returns: v.string(), // returns path to a video
   handler: async (ctx, args): Promise<string> => {
     return new Promise<string>((resolve, reject) => {
+      const videosDir = path.join(process.cwd(), "tmp", "videos");
+      fs.mkdirSync(videosDir, { recursive: true });
+
       const downloadTask = spawn(
         "yt-dlp",
-        [args.youtubeURL, "-f", "mp4", "-o", `${args.clipId}.%(ext)s`],
+        [
+          args.youtubeURL,
+          "-f",
+          "mp4",
+          "-o",
+          path.join(videosDir, `${args.clipId}.%(ext)s`)
+        ],
         {
           stdio: "inherit",
           env: { ...process.env }
@@ -43,7 +52,7 @@ export const download = internalAction({
           reject("Error while trying to download the video");
         }
 
-        const filepath = path.resolve(process.cwd(), `${args.clipId}.mp4`);
+        const filepath = path.join(videosDir, `${args.clipId}.mp4`);
 
         // update status & progress
         ctx.runMutation(internal.clips.patch, {
@@ -140,7 +149,10 @@ export const extractAudio = internalAction({
   returns: v.string(),
   handler: async (ctx, args) => {
     return new Promise<string>((resolve, reject) => {
-      const outputPath = path.join(process.cwd(), `${args.clipId}.wav`);
+      const audiosDir = path.join(process.cwd(), "tmp", "audios");
+      fs.mkdirSync(audiosDir, { recursive: true });
+
+      const outputPath = path.join(audiosDir, `${args.clipId}.wav`);
 
       const extractTask = spawn(
         "ffmpeg",
@@ -309,7 +321,9 @@ export const sliceAndStoreVideos = internalAction({
         // Sanitize title for filename
         const sanitizedTitle = clip.title.replace(/[^a-zA-Z0-9]/g, "_");
         const outputName = `${args.clipId}_${sanitizedTitle}_${editing.id}.mp4`;
-        const outputPath = path.join(process.cwd(), outputName);
+        const videosDir = path.join(process.cwd(), "tmp", "videos");
+        fs.mkdirSync(videosDir, { recursive: true });
+        const outputPath = path.join(videosDir, outputName);
 
         const slicePromise = (async () => {
           try {
