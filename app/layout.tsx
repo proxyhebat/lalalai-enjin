@@ -26,7 +26,17 @@ export default function RootLayout({
       >
         <ConvexClientProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            {/* Development Banner */}
+            <header className="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white text-center py-2 px-4 text-sm font-medium">
+              🚧 This project is still in early development 🚧
+            </header>
             {children}
+            <footer className="flex justify-center items-center h-16 border-t">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                &copy; {new Date().getFullYear()} LaLaLai OSS. All rights
+                reserved.
+              </p>
+            </footer>
             <Toaster />
           </ThemeProvider>
         </ConvexClientProvider>

@@ -65,7 +65,9 @@ export function DemoForm() {
               </FormControl>
               <FormDescription className="text-primary">
                 Fill the box with the YouTube video URL then press{" "}
-                <Kbd>enter</Kbd>
+                <button type="submit" className="cursor-pointer">
+                  <Kbd>enter</Kbd>
+                </button>
               </FormDescription>
               <FormMessage />
             </FormItem>
