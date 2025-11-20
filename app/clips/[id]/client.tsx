@@ -19,8 +19,9 @@ const VIDEO_WIDTH = 1920;
 
 export default function Client({ clipId }: { clipId: Id<"clips"> }) {
   const clip = useQuery(api.clips.get, { id: clipId });
+  const thumbnails = clip?.youtubeVideoDetail?.items[0]?.snippet?.thumbnails;
   return (
-    <div className="bg-card min-h-screen font-sans pt-20">
+    <div className="bg-card min-h-screen pt-20">
       <div className="mx-auto max-w-4xl space-y-8 px-4 pb-8">
         {/* VideoHeader */}
         <div className="rounded-lg p-6 border">
@@ -29,8 +30,11 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
               <div className="bg-secondary rounded-xl p-1.5">
                 <Image
                   src={
-                    clip?.youtubeVideoDetail?.items[0]?.snippet?.thumbnails
-                      ?.high?.url || ""
+                    thumbnails?.maxres?.url ||
+                    thumbnails?.high?.url ||
+                    thumbnails?.standard?.url ||
+                    thumbnails?.default?.url ||
+                    "/images/placeholder.jpeg"
                   }
                   alt={
                     clip?.youtubeVideoDetail?.items[0]?.snippet?.title ||
@@ -38,7 +42,7 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                   }
                   width={480}
                   height={360}
-                  className="h-48 w-full max-w-sm rounded object-cover"
+                  className="h-48 w-full max-w-sm rounded object-cover aspect-video"
                 />
               </div>
             </div>

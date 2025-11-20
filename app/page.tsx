@@ -4,7 +4,7 @@ import { DemoForm } from "@/components/forms/demo/form";
 
 export default function Home() {
   return (
-    <div className="flex flex-col gap-8 md:flex-row max-w-5xl mx-auto min-h-screen items-center justify-center font-sans px-8 lg:px-16">
+    <div className="flex flex-col gap-8 md:flex-row max-w-5xl mx-auto min-h-screen items-center justify-center px-8 lg:px-16">
       <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 sm:items-start">
         <Image
           className="hue-rotate-360 grayscale-75 scale-110"
