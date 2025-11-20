@@ -4,8 +4,6 @@
 ARG NODE_VERSION=22.20.0
 FROM node:${NODE_VERSION}-slim AS base
 
-LABEL fly_launch_runtime="Next.js"
-
 # Next.js app lives here
 WORKDIR /app
 
@@ -13,7 +11,7 @@ WORKDIR /app
 ENV NODE_ENV="production"
 
 # Install pnpm
-ARG PNPM_VERSION=latest
+ARG PNPM_VERSION=10.19.0
 RUN npm install -g pnpm@$PNPM_VERSION
 
 
@@ -32,11 +30,10 @@ RUN pnpm install --frozen-lockfile --prod=false
 COPY . .
 
 # Build application
-RUN npx next build --experimental-build-mode compile
+RUN npx next build
 
 # Remove development dependencies
 RUN pnpm prune --prod
-
 
 # Final stage for app image
 FROM base
@@ -44,9 +41,6 @@ FROM base
 # Copy built application
 COPY --from=build /app /app
 
-# Entrypoint sets up the container.
-ENTRYPOINT [ "/app/docker-entrypoint.js" ]
-
 # Start the server by default, this can be overwritten at runtime
 EXPOSE 3000
-CMD [ "pnpm", "run", "start" ]
+CMD [ "pnpm", "start" ]
