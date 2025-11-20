@@ -17,6 +17,10 @@ export const getFileUrls = query({
     fileIds: v.array(v.id("_storage"))
   },
   handler: async (ctx, args) => {
-    return await Promise.all(args.fileIds.map((id) => ctx.storage.getUrl(id)));
+    const urls = await Promise.all(
+      args.fileIds.map((id) => ctx.storage.getUrl(id))
+    );
+    console.info(urls);
+    return urls;
   }
 });

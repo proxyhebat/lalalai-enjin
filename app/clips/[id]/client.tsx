@@ -2,6 +2,10 @@
 
 import { Player } from "@remotion/player";
 import { useQuery } from "convex/react";
+import Link from "next/link";
+import { toast } from "sonner";
+
+import { wipToast } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 
@@ -82,8 +86,8 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
               Generated Clips
             </h2>
             <div className="flex gap-2">
-              <Button>Share All</Button>
-              <Button>Download All</Button>
+              <Button onClick={wipToast}>Share All</Button>
+              <Button onClick={wipToast}>Download All</Button>
             </div>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -95,9 +99,10 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                       className="absolute"
                       component={CaptionedVideo}
                       inputProps={{
-                        clip
+                        /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+                        clipData: x as any,
+                        captions: clip.captions ?? []
                       }}
-                      durationInFrames={Math.round(x.targetDurationMs / 1000)}
                       fps={Number(clip.videoFps?.split("/")[0] ?? 30)}
                       compositionHeight={VIDEO_HEIGHT}
                       compositionWidth={VIDEO_WIDTH}
@@ -106,9 +111,13 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                         // but not over inline styles
                         width: "100%"
                       }}
+                      durationInFrames={
+                        Math.round(x.targetDurationMs / 1000) *
+                        Number(clip.videoFps?.split("/")[0] ?? 30)
+                      }
                       controls
-                      autoPlay
-                      loop
+                      // autoPlay
+                      // loop
                     />
                     <div className="absolute right-2 bottom-2 rounded bg-black/70 px-2 py-1 text-xs text-white">
                       {Math.round(x.targetDurationMs / 1000)}s
@@ -119,8 +128,8 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
                       {x.title}
                     </h3>
                     <div className="flex gap-2">
-                      <Button>Download</Button>
-                      <Button>Share</Button>
+                      <Button onClick={wipToast}>Download</Button>
+                      <Button onClick={wipToast}>Share</Button>
                     </div>
                   </div>
                 </div>
@@ -128,7 +137,9 @@ export default function Client({ clipId }: { clipId: Id<"clips"> }) {
             ))}
           </div>
           <div className="mt-6 text-center">
-            <Button>Generate More Clips</Button>
+            <Button asChild>
+              <Link href="/new">Generate More Clips</Link>
+            </Button>
           </div>
         </div>
       </div>

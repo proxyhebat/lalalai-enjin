@@ -16,6 +16,7 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Kbd } from "@/components/ui/kbd";
 
 import { api } from "@/enjin/_generated/api";
 
@@ -62,8 +63,9 @@ export function DemoForm() {
                   {...field}
                 />
               </FormControl>
-              <FormDescription>
-                The video URL that you want to be clipped and shared.
+              <FormDescription className="text-primary">
+                Fill the box with the YouTube video URL then press{" "}
+                <Kbd>enter</Kbd>
               </FormDescription>
               <FormMessage />
             </FormItem>
