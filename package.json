@@ -7,7 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "ui": "pnpm dlx shadcn@latest"
+    "ui": "pnpm dlx shadcn@latest",
+    "remotion:dev": "remotion studio",
+    "remotion:build": "remotion bundle",
+    "remotion:upgrade": "remotion upgrade",
+    "remotion:create-subtitles": "node sub.mjs"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.68",
@@ -16,7 +20,15 @@
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-label": "^2.1.8",
     "@radix-ui/react-slot": "^1.2.4",
+    "@remotion/animation-utils": "4.0.376",
+    "@remotion/captions": "4.0.376",
+    "@remotion/cli": "4.0.376",
     "@remotion/install-whisper-cpp": "4.0.376",
+    "@remotion/layout-utils": "4.0.376",
+    "@remotion/media-utils": "4.0.376",
+    "@remotion/player": "^4.0.376",
+    "@remotion/tailwind-v4": "4.0.376",
+    "@remotion/zod-types": "4.0.376",
     "@t3-oss/env-nextjs": "^0.13.8",
     "@trivago/prettier-plugin-sort-imports": "^6.0.0",
     "class-variance-authority": "^0.7.1",
@@ -28,6 +40,7 @@
     "react": "19.2.0",
     "react-dom": "19.2.0",
     "react-hook-form": "^7.66.1",
+    "remotion": "4.0.376",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.1.12"
